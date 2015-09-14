@@ -88,7 +88,8 @@ void setup() {
 
   rtc.begin(H24); // start the RTC in 24 hours mode
 
-  readNTP(); // readNTP to set RTC
+  unsigned long epoch = readLinuxEpochUsingNetworkTimeProtocol();
+  setRealTimeClock(epoch);
 
   // print the current time reading values from the RTC
   printTime(rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
@@ -98,12 +99,12 @@ void setup() {
 }
 
 void loop() {
-  refreshCalendar(refreshTime, refreshType);
-
   int i = 0;
   bool start = false;
 
   clientBufferString = "";
+
+  checkCalendarRefresh(refreshTime, refreshType);
 
   if (client.available())
   {
@@ -115,14 +116,68 @@ void loop() {
         start = true;
 
       if (start && isPrintable(c)) // if useful data start and significant data is received
-        clientBufferString += c;
+        clientBufferString += c;   // add it to the buffer
     }
     extractEvents();
   }
 }
 
-// this function checks if the calendar has to be refreshedr
-void refreshCalendar(int howMany, char when)
+unsigned long readLinuxEpochUsingNetworkTimeProtocol()
+{
+  unsigned long epoch;
+
+  Udp.begin(localPort);
+  sendNTPpacket(timeServer); // send an NTP packet to a time server
+  // wait to see if a reply is available
+  delay(1000);
+
+  if ( Udp.parsePacket() ) {
+    Serial.println("NTP time received");
+    // We've received a packet, read the data from it
+    Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
+
+    //the timestamp starts at byte 40 of the received packet and is four bytes,
+    // or two words, long. First, esxtract the two words:
+
+    unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
+    unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
+    // combine the four bytes (two words) into a long integer
+    // this is NTP time (seconds since Jan 1 1900):
+    unsigned long secsSince1900 = highWord << 16 | lowWord;
+
+    // now convert NTP time into everyday time:
+    // Unix time starts on Jan 1 1970. In seconds, that's 2208988800:
+    const unsigned long seventyYears = 2208988800UL;
+    // subtract seventy years:
+    epoch = secsSince1900 - seventyYears;
+  }
+
+  Udp.stop();
+  return epoch;
+}
+
+// this function computes the current date and time to set the RTC using the time.h library
+void setRealTimeClock(uint32_t epoch)
+{
+  time_t rawtime;
+  struct tm * timeinfo;
+
+  rawtime = (time_t) epoch;
+  timeinfo = localtime (&rawtime);
+  Serial.println ("Current local time and date");
+  Serial.print(asctime(timeinfo));
+
+  rtc.setSeconds(timeinfo->tm_sec);
+  rtc.setMinutes(timeinfo->tm_min);
+  rtc.setHours((timeinfo->tm_hour) + GMT);
+
+  rtc.setDay(timeinfo->tm_mday);
+  rtc.setMonth((timeinfo->tm_mon) + 1); //tm_mon months since January - [ 0 to 11 ]
+  rtc.setYear((timeinfo->tm_year) - 100); //tm_year years since 1900 and format is yy
+}
+
+// this function checks if the calendar has to be refreshed
+void checkCalendarRefresh(int howMany, char when)
 {
   if (when == 'h')
   {
@@ -131,13 +186,15 @@ void refreshCalendar(int howMany, char when)
   }
   else if (when == 'm')
   {
-    if (rtc.getMinutes() >= (lastMinutes + howMany) ||  (lastMinutes + howMany > 60)))
+    if (rtc.getMinutes() >= (lastMinutes + howMany) || (lastMinutes + howMany >= 60))
+    {
       refresh();
-  }
+    }
 
-  delay(1000);
-  // print the current time
-  printTime(rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+    delay(1000);
+    // print the current time
+    printTime(rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+  }
 }
 
 // this function refreshes the calendar
@@ -151,7 +208,8 @@ void refresh()
 }
 
 /* this function makes a HTTP connection to the server: */
-void httpRequest() {
+void httpRequest()
+{
   // close any connection before send a new request.
   // This will free the socket on the WiFi shield
   client.stop();
@@ -271,7 +329,7 @@ void extractHowLong(String whenFromTo, String command)
         /*Serial.print("Valid day: ");
           Serial.println(day);*/
 
-        if (((rtc.getHours() >= fromHours) && (rtc.getMinutes() >=  fromMinutes)) || ((toHours >= rtc.getHours()) && (toMinutes >= rtc.getMinutes()))) // if the execution time is valid
+        if (((rtc.getHours() >= fromHours) && (rtc.getMinutes() >=  fromMinutes)) || ((toHours >= rtc.getHours()) && (toMinutes > rtc.getMinutes()))) // if the execution time is valid
         {
           decodeCommand(command, true);
         }
@@ -372,60 +430,6 @@ void decodeCommand(String command, bool validTime)
       pinMode(13, INPUT);
     }
   }
-}
-
-void readNTP()
-{
-  Udp.begin(localPort);
-  sendNTPpacket(timeServer); // send an NTP packet to a time server
-  // wait to see if a reply is available
-  delay(1000);
-
-  if ( Udp.parsePacket() ) {
-    Serial.println("NTP time received");
-    // We've received a packet, read the data from it
-    Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
-
-    //the timestamp starts at byte 40 of the received packet and is four bytes,
-    // or two words, long. First, esxtract the two words:
-
-    unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-    unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-    // combine the four bytes (two words) into a long integer
-    // this is NTP time (seconds since Jan 1 1900):
-    unsigned long secsSince1900 = highWord << 16 | lowWord;
-
-    // now convert NTP time into everyday time:
-    // Unix time starts on Jan 1 1970. In seconds, that's 2208988800:
-    const unsigned long seventyYears = 2208988800UL;
-    // subtract seventy years:
-    unsigned long epoch = secsSince1900 - seventyYears;
-
-    computeTime(epoch);
-  }
-
-  Udp.stop();
-}
-
-
-// this function computes the current date and time using the time.h library
-void computeTime(uint32_t epoch)
-{
-  time_t rawtime;
-  struct tm * timeinfo;
-
-  rawtime = (time_t) epoch;
-  timeinfo = localtime (&rawtime);
-  Serial.println ("Current local time and date");
-  Serial.print(asctime(timeinfo));
-
-  rtc.setSeconds(timeinfo->tm_sec);
-  rtc.setMinutes(timeinfo->tm_min);
-  rtc.setHours((timeinfo->tm_hour) + GMT);
-
-  rtc.setDay(timeinfo->tm_mday);
-  rtc.setMonth((timeinfo->tm_mon) + 1); //tm_mon months since January - [ 0 to 11 ]
-  rtc.setYear((timeinfo->tm_year) - 100); //tm_year years since 1900 and format is yy
 }
 
 // this function prints the current time
