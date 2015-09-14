@@ -35,7 +35,7 @@ WiFiClient client;
 char server[] = "www.google.com";
 
 // google magic cookie: replace your calendar private address here
-char magicCookie[] = "/calendar/feeds/userID/private-magicCookie/basic";
+char magicCookie[] = "magicCookie";
 
 // Used for NTP
 unsigned int localPort = 2390;      // local port to listen for UDP packets
@@ -46,12 +46,11 @@ WiFiUDP Udp; // A UDP instance to let us send and receive packets over UDP
 
 // Data used for time
 const int refreshTime = 1;
+String months[12] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"}; // put the months name in your language here please
 const char refreshType = 'm'; // refresh every refreshTime minutes
 //const char refreshType = 'h'; // refresh every refreshTime hours
 const int GMT = 2; //change this to adapt it to your time zone
 int lastHours, lastMinutes, lastSeconds;
-#define ITALIAN
-//#define ENGLISH
 
 // Commands that can be interpreted*/
 char cmd1[] = "LED1";
@@ -346,63 +345,9 @@ void extractHowLong(String whenFromTo, String command)
 // this function converts the month string in the corresponding number
 int monthToInt(String month)
 {
-  // the month string depends on your region language
-#ifdef ITALIAN
-  if (month == "gen")
-    return 1;
-  else if (month == "feb")
-    return 2;
-  else if (month == "mar")
-    return 3;
-  else if (month == "apr")
-    return 4;
-  else if (month == "mag")
-    return 5;
-  else if (month == "giu")
-    return 6;
-  else if (month == "lug")
-    return 7;
-  else if (month == "ago")
-    return 8;
-  else if (month == "set")
-    return 9;
-  else if (month == "ott")
-    return 10;
-  else if (month == "nov")
-    return 11;
-  else if (month == "dic")
-    return 12;
-  else
-    return 0;
-
-#elif ENGLISH
-  if (month == "gen")
-    return 1;
-  else if (month == "feb")
-    return 2;
-  else if (month == "mar")
-    return 3;
-  else if (month == "apr")
-    return 4;
-  else if (month == "may")
-    return 5;
-  else if (month == "jun")
-    return 6;
-  else if (month == "jul")
-    return 7;
-  else if (month == "aug")
-    return 8;
-  else if (month == "sep")
-    return 9;
-  else if (month == "oct")
-    return 10;
-  else if (month == "nov")
-    return 11;
-  else if (month == "dec")
-    return 12;
-  else
-    return 0;
-#endif
+  for (int i = 0; i < 12; i++)
+    if (month == months[i])
+      return i + 1;
 }
 
 // this function dedoded the different commands
