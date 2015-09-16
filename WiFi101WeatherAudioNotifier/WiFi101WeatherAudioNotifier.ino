@@ -1,3 +1,23 @@
+/*
+
+Weather Audio Notifier
+
+Hardware Required:
+* Arduino Zero Board  
+* Arduino Wifi101 Sheild
+* Piezo
+
+Software Required:
+* ArduinoJson Library
+
+Written by: Helena Bisby September 2015 (support@arduino.cc)
+
+This example code is in the public domain
+
+http://arduino.cc/en/Tutorial/WeatherAudioNotifier
+ 
+*/
+
 
 #include <SPI.h>
 #include <WiFi101.h>
