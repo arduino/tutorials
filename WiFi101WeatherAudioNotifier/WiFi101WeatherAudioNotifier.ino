@@ -10,7 +10,8 @@ Hardware Required:
 Software Required:
 * ArduinoJson Library
 
-Written by: Helena Bisby September 2015 (support@arduino.cc)
+ created Sept 2015
+ by Helena Bisby <support@arduino.cc>
 
 This example code is in the public domain
 
