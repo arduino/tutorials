@@ -1,3 +1,20 @@
+/*
+ThingSpeak
+Hardware Required:
+* Arduino Zero or Uno Board
+* Arduino Wifi Sheild 101
+* Photocell
+* Temperature Sensor (This example uses a TMP36)
+* 10K Ohm Resistor
+
+created Sept 2015
+by Helena Bisby <support@arduino.cc>
+This example code is in the public domain
+http://arduino.cc/en/Tutorial/WiFi101ThingSpeak
+
+*/
+
+
 #include <SPI.h>
 #include <WiFi101.h>
 
@@ -54,8 +71,8 @@ void setup() {
 void loop() {
   // read values from pins and store as strings
 
-  
-  String light = String(analogRead(A0),DEC); // read light value
+
+  String light = String(analogRead(A0), DEC); // read light value
 
   // find temp value
   float voltage = analogRead(A1) * (3.3 / 1024);  // convert 0-1023 range to 3.3V range
