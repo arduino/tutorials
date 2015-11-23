@@ -1,3 +1,15 @@
+/*
+  Genuino 101 CurieIMU Orientation Visualiser
+  Hardware Required:
+  * Arduino Zero or Uno Board
+  
+  ---------------------------------------------------------------------
+  Created Nov 2015
+  by Helena Bisby <support@arduino.cc>
+  This example code is in the public domain
+  http://arduino.cc/en/Tutorial/Genuino101CurieIMUOrientationVisualiser
+*/
+
 import processing.serial.*;
 Serial myPort;
 float yaw;
