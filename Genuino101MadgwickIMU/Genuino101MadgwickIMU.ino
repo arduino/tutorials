@@ -31,7 +31,7 @@
   
   Genuino 101 CurieIMU Orientation Visualiser
   Hardware Required:
-  * Arduino Zero or Uno Board
+  * Arduino/Genuino 101
   
   Modified Nov 2015
   by Helena Bisby <support@arduino.cc>
