@@ -50,7 +50,7 @@ float roll;
 int factor = 800; // variable by which to divide gyroscope values, used to control sensitivity
 // note that an increased baud rate requires an increase in value of factor
 
-int calibrateOffsets = 0; // int to determine whether calibration takes place or not
+int calibrateOffsets = 1; // int to determine whether calibration takes place or not
 
 
 void setup() {
@@ -85,16 +85,16 @@ void setup() {
     //    CurieImu.setYAccelOffset(--235);
     //    CurieImu.setZAccelOffset(168);
 
-    // IMU device must be resting in a horizontal position for the following calibration procedure to work correctly!
+    //IMU device must be resting in a horizontal position for the following calibration procedure to work correctly!
 
-    // Serial.print("Starting Gyroscope calibration...");
+    Serial.print("Starting Gyroscope calibration...");
     CurieImu.autoCalibrateGyroOffset();
-    // Serial.println(" Done");
-    // Serial.print("Starting Acceleration calibration...");
+    Serial.println(" Done");
+    Serial.print("Starting Acceleration calibration...");
     CurieImu.autoCalibrateXAccelOffset(0);
     CurieImu.autoCalibrateYAccelOffset(0);
     CurieImu.autoCalibrateZAccelOffset(1);
-    // Serial.println(" Done");
+    Serial.println(" Done");
 
     Serial.println("Internal sensor offsets AFTER calibration...");
     Serial.print(CurieImu.getXAccelOffset()); Serial.print("\t");
