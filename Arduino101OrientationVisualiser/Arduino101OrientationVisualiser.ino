@@ -42,6 +42,7 @@
 #include "CurieImu.h"
 #include "MadgwickAHRS.h"
 
+Madgwick filter; // initialise Madgwick object
 int ax, ay, az;
 int gx, gy, gz;
 float yaw;
@@ -120,13 +121,13 @@ void loop() {
   gz = CurieImu.getRotationZ();
 
   // use function from MagdwickAHRS.h to return quaternions
-  MadgwickAHRSupdateIMU(gx / factor, gy / factor, gz / factor, ax, ay, az);
+  filter.updateIMU(gx / factor, gy / factor, gz / factor, ax, ay, az);
 
-  // equations to find yaw roll and pitch from quaternions
-  yaw = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0 * q0 + 2 * q1 * q1 - 1);
-  roll = -1 * asin(2 * q1 * q3 + 2 * q0 * q2);
-  pitch = atan2(2 * q2 * q3 - 2 * q0 * q1, 2 * q0 * q0 + 2 * q3 * q3 - 1);
-
+  // functions to find yaw roll and pitch from quaternions
+  yaw = filter.getYaw();
+  roll = filter.getRoll();
+  pitch = filter.getPitch();
+  
   // print gyro and accel values for debugging only, comment out when running Processing
   /*
   Serial.print(ax); Serial.print("\t");

@@ -11,8 +11,9 @@ String [] ypr = new String [3];
 void setup()
 {
   size(600, 500, P3D);
+  
   /*Set my serial port to same as Arduino, baud rate 9600*/
-  myPort = new Serial(this, "/dev/cu.usbmodemfa131", 9600); 
+  myPort = new Serial(this, Serial.list()[2], 9600); 
   textSize(16); // set text size
   textMode(SHAPE); // set text mode to shape
 }
