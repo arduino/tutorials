@@ -28,9 +28,9 @@ int lastStepCount = 0;
 void setup() {
   Serial.begin(9600);
 
-  CurieImu.initialize();
-  CurieImu.setStepDetectionMode(BMI160_STEP_MODE_NORMAL);
-  CurieImu.setStepCountEnabled(true);
+  CurieImu.initialize(); // initialise the IMU
+  CurieImu.setStepDetectionMode(BMI160_STEP_MODE_NORMAL); // set step detection mode to normal
+  CurieImu.setStepCountEnabled(true); // enable step count
 
   Serial.println("IMU initialisation complete, waiting for events...");
 }
@@ -43,8 +43,8 @@ void loop() {
 
 void updateStepCount()
 {
-  int stepCount = CurieImu.getStepCount();
-  if (stepCount != lastStepCount) {
+  int stepCount = CurieImu.getStepCount(); // set stepCount to read stepCount from function
+  if (stepCount != lastStepCount) { // if stepCount has changed
     Serial.print("Step count: "); Serial.println(stepCount);
     lastStepCount = stepCount;
   }
