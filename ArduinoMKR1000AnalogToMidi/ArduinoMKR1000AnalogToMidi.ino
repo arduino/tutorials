@@ -36,7 +36,6 @@ int intensity = 64;                           // The volume of the played note i
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  pinMode(11, OUTPUT);
   meter.setBandwidth(75.00, 600.00);          // Set available bandwidth between 75Hz and 600Hz
   meter.begin(A0, 45000);                     // Intialize A0 at sample rate of 45kHz
 }
