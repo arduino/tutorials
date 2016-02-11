@@ -1,5 +1,5 @@
 /*
-  Analog to Midi Converter for Arduino MKR1000
+  Analog to Midi Converter for Arduino/Genuino MKR1000
 
   Demonstrates how to sample an input signal and get back its corresponding MIDI note
 
@@ -9,16 +9,18 @@
 
   created by Arturo Guadalupi <a.guadalupi@arduino.cc>
   29 Jan 2016
+  modified 
+  11 Feb 2016
 */
 
 #include <AudioFrequencyMeter.h>
 #include <MIDIUSB.h>
-#include <frequencyToNote.h>
-#include <pitchToNote.h>
+#include "frequencyToNote.h"
+#include "pitchToNote.h"
 
-#define DEPTH         60                      // Defines depth of the array for averaged frequencies
+#define DEPTH         30                      // Defines depth of the array for averaged frequencies
 #define HUMAN_RATE    50                      // Defines 50ms corresponding to 20 notes/s
-#define MAX_DURATION  1000                    // Defines the max play duration of the note
+#define MAX_DURATION  1000                    // Defines the max duration of a note after it is played
 
 AudioFrequencyMeter meter;
 
@@ -36,8 +38,9 @@ int intensity = 64;                           // The volume of the played note i
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  meter.setBandwidth(75.00, 600.00);          // Set available bandwidth between 75Hz and 600Hz
-  meter.begin(A0, 45000);                     // Intialize A0 at sample rate of 45kHz
+  pinMode(11, OUTPUT);
+  meter.setBandwidth(30.0, 1700.0);          // Set available bandwidth between 75Hz and 600Hz
+  meter.begin(A0, 96000);                     // Intialize A0 at sample rate of 45kHz
 }
 
 void loop() {
@@ -75,7 +78,7 @@ void loop() {
         }
       }
 
-      int numberOfdifferentFrequencies = 0;   // Used to determine how many different Frequencies have been detected
+      int numberOfdifferentFrequencies = 0;    // Used to determine how many different Frequencies have been detected
 
       for (i = 0; i < DEPTH; i++)
       {
