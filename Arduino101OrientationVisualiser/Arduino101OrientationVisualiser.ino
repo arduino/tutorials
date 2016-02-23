@@ -59,14 +59,8 @@ void setup() {
   Serial.begin(9600);
 
   // initialize device
-  CurieIMU.initialize();
-
-  // verify connection
-  if (!CurieIMU.testConnection()) {
-    Serial.println("CurieIMU connection failed");
-  }
-
-
+  CurieIMU.begin();
+  
   if (calibrateOffsets == 1) {
     // use the code below to calibrate accel/gyro offset values
     Serial.println("Internal sensor offsets BEFORE calibration...");
