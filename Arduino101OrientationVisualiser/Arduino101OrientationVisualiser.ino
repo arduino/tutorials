@@ -1,6 +1,6 @@
 /*
   ===============================================
-  Example sketch for CurieImu library for Intel(R) Curie(TM) devices.
+  Example sketch for CurieIMU library for Intel(R) Curie(TM) devices.
   Copyright (c) 2015 Intel Corporation.  All rights reserved.
 
   Based on I2C device class (I2Cdev) demonstration Arduino sketch for MPU6050
@@ -39,8 +39,8 @@
   http://arduino.cc/en/Tutorial/Genuino101CurieIMUOrientationVisualiser
 */
 
-#include "CurieImu.h"
-#include "MadgwickAHRS.h"
+#include <CurieIMU.h>
+#include <MadgwickAHRS.h>
 
 Madgwick filter; // initialise Madgwick object
 int ax, ay, az;
@@ -59,66 +59,58 @@ void setup() {
   Serial.begin(9600);
 
   // initialize device
-  CurieImu.initialize();
+  CurieIMU.initialize();
 
   // verify connection
-  if (!CurieImu.testConnection()) {
-    Serial.println("CurieImu connection failed");
+  if (!CurieIMU.testConnection()) {
+    Serial.println("CurieIMU connection failed");
   }
 
 
   if (calibrateOffsets == 1) {
     // use the code below to calibrate accel/gyro offset values
     Serial.println("Internal sensor offsets BEFORE calibration...");
-    Serial.print(CurieImu.getXAccelOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getYAccelOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getZAccelOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getXGyroOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getYGyroOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getZGyroOffset()); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getGyroOffset(X_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getGyroOffset(Y_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getGyroOffset(Z_AXIS)); Serial.print("\t");
     Serial.println("");
 
     // To manually configure offset compensation values, use the following methods instead of the autoCalibrate...() methods below
-    //    CurieImu.setXGyroOffset(220);
-    //    CurieImu.setYGyroOffset(76);
-    //    CurieImu.setZGyroOffset(-85);
-    //    CurieImu.setXAccelOffset(-76);
-    //    CurieImu.setYAccelOffset(--235);
-    //    CurieImu.setZAccelOffset(168);
+    //    CurieIMU.setGyroOffset(X_AXIS, 220);
+    //    CurieIMU.setGyroOffset(Y_AXIS, 76);
+    //    CurieIMU.setGyroOffset(Z_AXIS, -85);
+    //    CurieIMU.setAccelOffset(X_AXIS, -76);
+    //    CurieIMU.setAccelOffset(Y_AXIS, -235);
+    //    CurieIMU.setAccelOffset(Z_AXIS, 168);
 
     //IMU device must be resting in a horizontal position for the following calibration procedure to work correctly!
 
     Serial.print("Starting Gyroscope calibration...");
-    CurieImu.autoCalibrateGyroOffset();
+    CurieIMU.autoCalibrateGyroOffset();
     Serial.println(" Done");
     Serial.print("Starting Acceleration calibration...");
-    CurieImu.autoCalibrateXAccelOffset(0);
-    CurieImu.autoCalibrateYAccelOffset(0);
-    CurieImu.autoCalibrateZAccelOffset(1);
+    CurieIMU.autoCalibrateAccelerometerOffset(X_AXIS, 0);
+    CurieIMU.autoCalibrateAccelerometerOffset(Y_AXIS, 0);
+    CurieIMU.autoCalibrateAccelerometerOffset(Z_AXIS, 1); ;
     Serial.println(" Done");
 
     Serial.println("Internal sensor offsets AFTER calibration...");
-    Serial.print(CurieImu.getXAccelOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getYAccelOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getZAccelOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getXGyroOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getYGyroOffset()); Serial.print("\t");
-    Serial.print(CurieImu.getZGyroOffset()); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(X_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(Y_AXIS)); Serial.print("\t");
+    Serial.print(CurieIMU.getAccelerometerOffset(Z_AXIS)); Serial.print("\t");
     Serial.println("");
-    Serial.println("Enabling Gyroscope/Acceleration offset compensation");
-    CurieImu.setGyroOffsetEnabled(true);
-    CurieImu.setAccelOffsetEnabled(true);
   }
 }
 
 void loop() {
   // read raw accel/gyro measurements from device
-  ax = CurieImu.getAccelerationX();
-  ay = CurieImu.getAccelerationY();
-  az = CurieImu.getAccelerationZ();
-  gx = CurieImu.getRotationX();
-  gy = CurieImu.getRotationY();
-  gz = CurieImu.getRotationZ();
+  CurieIMU.readMotionSensor(ax, ay, az, gx, gy, gz); 
 
   // use function from MagdwickAHRS.h to return quaternions
   filter.updateIMU(gx / factor, gy / factor, gz / factor, ax, ay, az);
