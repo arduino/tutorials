@@ -76,9 +76,9 @@ void setup() {
     //    CurieIMU.setGyroOffset(X_AXIS, 220);
     //    CurieIMU.setGyroOffset(Y_AXIS, 76);
     //    CurieIMU.setGyroOffset(Z_AXIS, -85);
-    //    CurieIMU.setAccelOffset(X_AXIS, -76);
-    //    CurieIMU.setAccelOffset(Y_AXIS, -235);
-    //    CurieIMU.setAccelOffset(Z_AXIS, 168);
+    //    CurieIMU.setAccelerometerOffset(X_AXIS, -76);
+    //    CurieIMU.setAccelerometerOffset(Y_AXIS, -235);
+    //    CurieIMU.setAccelerometerOffset(Z_AXIS, 168);
 
     //IMU device must be resting in a horizontal position for the following calibration procedure to work correctly!
 
@@ -88,7 +88,7 @@ void setup() {
     Serial.print("Starting Acceleration calibration...");
     CurieIMU.autoCalibrateAccelerometerOffset(X_AXIS, 0);
     CurieIMU.autoCalibrateAccelerometerOffset(Y_AXIS, 0);
-    CurieIMU.autoCalibrateAccelerometerOffset(Z_AXIS, 1); ;
+    CurieIMU.autoCalibrateAccelerometerOffset(Z_AXIS, 1);
     Serial.println(" Done");
 
     Serial.println("Internal sensor offsets AFTER calibration...");
