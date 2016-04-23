@@ -15,9 +15,9 @@
 #include <WiFi101.h>
 #include <RTCZero.h>
 
-char ssid[] = "officine1";      //  your network SSID (name)
-char pass[] = "IoTisMagic";     // your network password
-int keyIndex = 0;                 // your network key Index number (needed only for WEP)
+char ssid[] = "yourPassword";      //  your network SSID (name)
+char pass[] = "yourNetwork";       // your network password
+int keyIndex = 0;                  // your network key Index number (needed only for WEP)
 
 int status = WL_IDLE_STATUS;
 
