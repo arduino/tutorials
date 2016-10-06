@@ -124,7 +124,7 @@ unsigned long readLinuxEpochUsingNTP()
 
 void printTime()
 {
-  print2digits(rtc.getHours());
+  print2digits(rtc.getHours() + GMT);
   Serial.print(":");
   print2digits(rtc.getMinutes());
   Serial.print(":");
