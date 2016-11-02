@@ -16,7 +16,7 @@
 #include <WiFi101.h>
 #include <WiFiMDNSResponder.h>
 
-#include "password.h" //where defined NET_SSID and NET_PWD
+#include "password.h"
 
 char ssid[] = NET_SSID;      // your network SSID (name)
 char pass[] = NET_PWD;   // your network password
@@ -36,25 +36,27 @@ WiFiServer server(80);
 
 String readString;
 
-//Motor shield pins
 const int pinDirA = 12;
-const int pinDirB = 13;
+const int pinDirB = 0; //pin 13 is wired to pin 0 on the shield adapter
 const int pinPwmA = 3;
 const int pinPwmB = 11;
+const int pinBrakeA = 9;
+const int pinBrakeB = 8;
 
-const int motorSpeed = 255; //value used during the analogWrite() use
-const int stepsDelay = 500; //delay between movements
+const int motorSpeed = 200;
+const int stepsDelay = 500;
 
 void setup() {
+  //Initialize serial and wait for port to open:
   //Put motor shield pins as output
   pinMode(pinDirA, OUTPUT);
   pinMode(pinPwmA, OUTPUT);
+  pinMode(pinBrakeA, OUTPUT);
   pinMode(pinDirB, OUTPUT);
   pinMode(pinPwmB, OUTPUT);
-
-  stopMotors();
-
-  //Initialize serial and wait for port to open:
+  pinMode(pinBrakeB, OUTPUT);
+  brake();
+  
   Serial.begin(9600);
 
   // check for the presence of the shield:
@@ -103,7 +105,7 @@ void loop() {
   WiFiClient client = server.available();
 
   if (client) {
-    Serial.println("New client");
+    Serial.println("new client");
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     while (client.connected()) {
@@ -120,6 +122,7 @@ void loop() {
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  // the connection will be closed after completion of the response
+          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<head><title>WiFi Robot</title></head>");
@@ -147,31 +150,29 @@ void loop() {
 
     // close the connection:
     client.stop();
-    
-    // parse the received string
     if (readString.indexOf("/?GO_UP") > 0) {
       Serial.println();
       Serial.println("UP");
       Serial.println();
-      goUp(); //move up
+      goUp();
     }
     if (readString.indexOf("/?GO_DOWN") > 0) {
       Serial.println();
       Serial.println("DOWN");
       Serial.println();
-      goDown(); //move down
+      goDown();
     }
     if (readString.indexOf("/?GO_LEFT") > 0) {
       Serial.println();
       Serial.println("LEFT");
       Serial.println();
-      goLeft(); //move left
+      goLeft();
     }
     if (readString.indexOf("/?GO_RIGHT") > 0) {
       Serial.println();
       Serial.println("RIGHT");
       Serial.println();
-      goRight(); //move right
+      goRight();
     }
     readString = "";// Clearing string for next read
     Serial.println("client disconnected");
@@ -196,48 +197,61 @@ void printWiFiStatus() {
   Serial.println(" dBm");
 }
 
-void stopMotors(void) {
-  analogWrite(pinPwmA, 0);
-  analogWrite(pinPwmB, 0);
+void goDown(void) {
+  motorAforward();
+  motorBforward();
+  delay(stepsDelay);
+  brake();
 }
 
 void goUp(void) {
-  digitalWrite(pinDirA, HIGH);
-  digitalWrite(pinDirB, HIGH);
-  delay(1);
-  analogWrite(pinPwmA, motorSpeed);
-  analogWrite(pinPwmB, motorSpeed);
+  motorBbackward();
+  motorBbackward();
   delay(stepsDelay);
-  stopMotors();
-}
-
-void goDown(void) {
-  digitalWrite(pinDirA, LOW);
-  digitalWrite(pinDirB, LOW);
-  delay(1);
-  analogWrite(pinPwmA, motorSpeed);
-  analogWrite(pinPwmB, motorSpeed);
-  delay(stepsDelay);
-  stopMotors();
+  brake();
 }
 
 void goLeft(void) {
-  digitalWrite(pinDirA, LOW);
-  digitalWrite(pinDirB, HIGH);
-  delay(1);
-  analogWrite(pinPwmA, motorSpeed);
-  analogWrite(pinPwmB, motorSpeed);
-  delay(stepsDelay*2);
-  stopMotors();
+  motorAforward();
+  motorBbackward();
+  delay(2*stepsDelay);
+  brake();
 }
 
 void goRight(void) {
-  digitalWrite(pinDirA, HIGH);
-  digitalWrite(pinDirB, LOW);
-  delay(1);
-  analogWrite(pinPwmA, motorSpeed);
-  analogWrite(pinPwmB, motorSpeed);
-  delay(stepsDelay*2);
-  stopMotors();
+  motorBforward();
+  motorAbackward();
+  delay(2*stepsDelay);
+  brake();
 }
+
+void motorAforward(void) {
+  digitalWrite(pinDirA, HIGH); //Establishes forward direction of Channel A
+  digitalWrite(pinBrakeA, LOW);   //Disengage the Brake for Channel A
+  analogWrite(pinPwmA, motorSpeed);   //Spins the motor on Channel A at full motorSpeed
+}
+
+void motorAbackward(void) {
+  digitalWrite(pinDirA, LOW); //Establishes forward direction of Channel A
+  digitalWrite(pinBrakeA, LOW);   //Disengage the Brake for Channel A
+  analogWrite(pinPwmA, motorSpeed);   //Spins the motor on Channel A at full motorSpeed
+}
+
+void motorBforward(void) {
+  digitalWrite(pinDirB, HIGH); //Establishes forward direction of Channel A
+  digitalWrite(pinBrakeB, LOW);   //Disengage the Brake for Channel A
+  analogWrite(pinPwmB, motorSpeed);   //Spins the motor on Channel A at full motorSpeed
+}
+
+void motorBbackward(void) {
+  digitalWrite(pinDirB, LOW); //Establishes forward direction of Channel A
+  digitalWrite(pinBrakeB, LOW);   //Disengage the Brake for Channel A
+  analogWrite(pinPwmB, motorSpeed);   //Spins the motor on Channel A at full motorSpeed
+}
+
+void brake(void) {
+  digitalWrite(pinBrakeA, HIGH);   //Engage the Brake for Channel A
+  digitalWrite(pinBrakeB, HIGH);   //Engage the Brake for Channel B
+}
+
 
