@@ -1,3 +1,17 @@
+/*
+  MKR1000 WiFi Robot
+
+  This sketch use the WiFi server capability of a MKR1000 to post a web interface used to move a mini robot.
+  
+  Required hardware:
+  - Arduino/Genuino MKR1000;
+  - MKR2UNO Shield adapter;
+  - Arduino Motor Shield
+
+  created 02 Nov 2016
+  by Arturo Guadalupi <a.guadalupi@arduino.cc>
+*/
+
 #include <SPI.h>
 #include <WiFi101.h>
 #include <WiFiMDNSResponder.h>
@@ -28,11 +42,10 @@ const int pinDirB = 13;
 const int pinPwmA = 3;
 const int pinPwmB = 11;
 
-const int motorSpeed = 255;
-const int stepsDelay = 500;
+const int motorSpeed = 255; //value used during the analogWrite() use
+const int stepsDelay = 500; //delay between movements
 
 void setup() {
-  //Initialize serial and wait for port to open:
   //Put motor shield pins as output
   pinMode(pinDirA, OUTPUT);
   pinMode(pinPwmA, OUTPUT);
@@ -41,11 +54,7 @@ void setup() {
 
   stopMotors();
 
-  digitalWrite(pinDirA, HIGH);
-  digitalWrite(pinDirB, HIGH);
-  analogWrite(pinPwmA, 0);
-  analogWrite(pinPwmB, 0);
-
+  //Initialize serial and wait for port to open:
   Serial.begin(9600);
 
   // check for the presence of the shield:
@@ -66,7 +75,7 @@ void setup() {
     delay(10000);
   }
   // you're connected now, so print out the status:
-  printWifiStatus();
+  printWiFiStatus();
 
   server.begin();
 
@@ -94,7 +103,7 @@ void loop() {
   WiFiClient client = server.available();
 
   if (client) {
-    Serial.println("new client");
+    Serial.println("New client");
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     while (client.connected()) {
@@ -111,7 +120,6 @@ void loop() {
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  // the connection will be closed after completion of the response
-          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<head><title>WiFi Robot</title></head>");
@@ -139,29 +147,31 @@ void loop() {
 
     // close the connection:
     client.stop();
+    
+    // parse the received string
     if (readString.indexOf("/?GO_UP") > 0) {
       Serial.println();
       Serial.println("UP");
       Serial.println();
-      goUp();
+      goUp(); //move up
     }
     if (readString.indexOf("/?GO_DOWN") > 0) {
       Serial.println();
       Serial.println("DOWN");
       Serial.println();
-      goDown();
+      goDown(); //move down
     }
     if (readString.indexOf("/?GO_LEFT") > 0) {
       Serial.println();
       Serial.println("LEFT");
       Serial.println();
-      goLeft();
+      goLeft(); //move left
     }
     if (readString.indexOf("/?GO_RIGHT") > 0) {
       Serial.println();
       Serial.println("RIGHT");
       Serial.println();
-      goRight();
+      goRight(); //move right
     }
     readString = "";// Clearing string for next read
     Serial.println("client disconnected");
@@ -169,7 +179,7 @@ void loop() {
 }
 
 
-void printWifiStatus() {
+void printWiFiStatus() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
