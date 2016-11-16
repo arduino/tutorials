@@ -49,7 +49,7 @@ void setup() {
   }
 
   // you're connected now, so print out the status:
-  printWifiStatus();
+  printWiFiStatus();
 
   rtc.begin();
 
@@ -103,7 +103,7 @@ void printDate()
 }
 
 
-void printWifiStatus() {
+void printWiFiStatus() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
