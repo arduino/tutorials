@@ -21,7 +21,7 @@
    For more information: https://developer.bluetooth.org/gatt/services/Pages/ServicesHome.aspx
 */
 
-#include <CurieBle.h>
+#include <CurieBLE.h>
 
 BLEPeripheral blePeripheral;       // BLE Peripheral Device (the board you're programming)
 BLEService heartRateService("180D"); // BLE Heart Rate Service
