@@ -15,11 +15,10 @@
 #include <SPI.h>
 #include <WiFi101.h>
 #include <WiFiMDNSResponder.h>
-
-#include "password.h"
-
-char ssid[] = NET_SSID;      // your network SSID (name)
-char pass[] = NET_PWD;   // your network password
+#include "arduino_secrets.h"
+///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+char ssid[] = SECRET_SSID;        // your network SSID (name)
+char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 
 char mdnsName[] = "WiFiRobot"; // the MDNS name that the board will respond to

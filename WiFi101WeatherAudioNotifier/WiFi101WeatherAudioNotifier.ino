@@ -25,9 +25,10 @@ http://arduino.cc/en/Tutorial/WeatherAudioNotifier
 #include <ArduinoJson.h>
 
 #define JSON_BUFF_DIMENSION 2500
-
-char ssid[] = "ssid";        // your network SSID (name)
-char pass[] = "password";    // your network password (use for WPA, or use as key for WEP)
+#include "arduino_secrets.h" 
+///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+char ssid[] = SECRET_SSID;        // your network SSID (name)
+char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;            // your network key Index number (needed only for WEP)
 
 String nameOfCity = "Turin,IT";   // your city of interest here in format "city,countrycode"
