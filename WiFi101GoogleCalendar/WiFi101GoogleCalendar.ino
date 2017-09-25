@@ -87,7 +87,7 @@ void setup() {
   // you're connected now, so print out the status:
   printWifiStatus();
 
-  rtc.begin(H24); // start the RTC in 24 hours mode
+  rtc.begin(); // start the RTC in 24 hours mode
 
   unsigned long epoch = readLinuxEpochUsingNetworkTimeProtocol();
   setRealTimeClock(epoch);
