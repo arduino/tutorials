@@ -68,7 +68,7 @@
 #define B2  47
 #define B2b 46
 #define A2  45
-#define A6b 44
+#define A2b 44
 #define G2  43
 #define G2b 42
 #define F2  41
