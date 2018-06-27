@@ -61,7 +61,7 @@ void setup() {
     epoch = WiFi.getTime();
     numberOfTries++;
   }
-  while ((epoch == 0) || (numberOfTries > maxTries));
+  while ((epoch == 0) && (numberOfTries <>> maxTries));
 
   if (numberOfTries > maxTries) {
     Serial.print("NTP unreachable!!");
