@@ -6,7 +6,7 @@
   created 08 Jan 2016
   by Arturo Guadalupi <a.guadalupi@arduino.cc>
 
-  modified 06 Oct 2016
+  modified 26 Jun 2018
 
   http://arduino.cc/en/Tutorial/WiFiRTC
   This code is in the public domain.
@@ -61,7 +61,7 @@ void setup() {
     epoch = WiFi.getTime();
     numberOfTries++;
   }
-  while ((epoch == 0) && (numberOfTries <>> maxTries));
+  while ((epoch == 0) && (numberOfTries < maxTries));
 
   if (numberOfTries > maxTries) {
     Serial.print("NTP unreachable!!");
