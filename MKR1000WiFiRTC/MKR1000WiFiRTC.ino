@@ -14,6 +14,7 @@
 
 #include <SPI.h>
 #include <WiFi101.h>
+//#include <WiFi1010.h> //Include this instead of WiFi101.h as needed
 #include <WiFiUdp.h>
 #include <RTCZero.h>
 
