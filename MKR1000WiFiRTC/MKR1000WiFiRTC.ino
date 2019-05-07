@@ -64,7 +64,7 @@ void setup() {
   }
   while ((epoch == 0) && (numberOfTries < maxTries));
 
-  if (numberOfTries > maxTries) {
+  if (numberOfTries == maxTries) {
     Serial.print("NTP unreachable!!");
     while (1);
   }
